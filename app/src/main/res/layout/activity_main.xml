@@ -7,13 +7,122 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <Spinner
+                android:id="@+id/language_from"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center_vertical"
+                android:entries="@array/Language_from"/>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <Spinner
+                android:id="@+id/language_to"
+                android:layout_width="130dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|center_vertical"
+                android:entries="@array/Language_to"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="10dp"
+            >
+
+            <com.example.jason.ichinese.CustomCtrl.MultiLineEditText
+                android:id="@+id/userInput"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="textMultiLine"
+                android:text=""
+                android:textSize="18sp"
+                android:background="@null"
+                android:lines="3"
+                android:minLines="1"
+                android:textCursorDrawable="@null"
+                app:layout_constraintBottom_toTopOf="@+id/textViewTransRes"
+                app:layout_constraintEnd_toStartOf="@+id/BtnTranslate"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:lineColorEt="@color/colorLineEdit"
+                />
+
+            <Button
+                android:id="@+id/BtnTranslate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="buttonTranslateClicked"
+                android:text="@string/translate"
+                app:layout_constraintBottom_toTopOf="@+id/textViewTransRes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/userInput" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textViewTransRes"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text=""
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/BtnTranslate" />
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="bottom"
+            android:layout_margin="10dp"
+            >
+
+            <com.example.jason.ichinese.CustomCtrl.HorizontalScrollBarStrip
+                android:id="@+id/id_horizontal_view"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:layout_marginTop="10dp"
+                android:background="@android:color/white" />
+
+            <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="2dp"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:orientation="horizontal">-->
+
+            <!--<View-->
+            <!--android:id="@+id/id_line"-->
+            <!--android:layout_width="100dp"-->
+            <!--android:layout_height="1dp"-->
+            <!--android:background="@color/colorAccent" />-->
+            <!--</LinearLayout>-->
+        </RelativeLayout>
+    </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">iChinese</string>
+    <string name="app_name">i单词</string>
+    <string name="translate">翻译</string>
 </resources>

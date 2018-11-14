@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <array name="Language_from">
+        <item>"自动检测"</item>
+        <item>"English"</item>
+        <item>"中文"</item>
+        <item>"日本语"</item>
+    </array>
+
+    <array name="Language_to">
+        <item>"English"</item>
+        <item>"中文"</item>
+        <item>"日本语"</item>
+    </array>
+</resources>
