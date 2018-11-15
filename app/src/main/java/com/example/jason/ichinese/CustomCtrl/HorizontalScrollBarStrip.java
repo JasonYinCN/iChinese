@@ -215,7 +215,7 @@ import android.widget.Toast;
     protected void changeActiveTag(int position) {
         isScrool = false;
         int size = tabsContainer.getChildCount();
-        Toast.makeText(getContext(), mTitles.get(position), Toast.LENGTH_SHORT).show(); /** 当前控件索引 */
+//        Toast.makeText(getContext(), mTitles.get(position), Toast.LENGTH_SHORT).show(); /** 当前控件索引 */
         mTagIndex = -1;
         int[] location = new int[2];
         for (int i = 0; i < size; i++) {

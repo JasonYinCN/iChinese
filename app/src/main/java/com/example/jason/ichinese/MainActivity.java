@@ -1,9 +1,10 @@
 package com.example.jason.ichinese;
 
-import android.content.res.TypedArray;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -33,10 +34,9 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
 
     //scroll bar
     private HorizontalScrollBarStrip id_horizontal_view;
-    //    private View id_line;
     private LinearLayout.LayoutParams lineLp;
 
-    private List<String> mScrollBarTitiles = Arrays.asList("翻译", "生词本", "发现", "我的");
+    private List<String> mScrollBarTitiles = Arrays.asList("Trans", "Study", "Find", "Me");
     private int mLineLocation_X = 0;
 
     //translate callback
@@ -64,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
     private void initView() {
         id_horizontal_view = findViewById(R.id.id_horizontal_view);
         initLineParams();
-//        id_line = findViewById(R.id.id_line);
-//        id_line.setLayoutParams(lineLp);
         id_horizontal_view.setTags(mScrollBarTitiles);
         id_horizontal_view.setOnTagChangeListener(this);
 
@@ -82,12 +80,9 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
         if (isClick) {
             duration = 200 * (Math.abs(location_x - mLineLocation_X) / 100);
             duration = duration > 400 ? 400 : duration;
-        } else {
-            duration = 0;
         }
         animation.setDuration(duration);
         animation.setFillAfter(true);
-//        id_line.startAnimation(animation);
         mLineLocation_X = location_x;
     }
 
@@ -105,6 +100,9 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
     public void buttonTranslateClicked(View v){
         String uersInputStr = mUserInputText.getText().toString();
         System.out.println("User input:" + uersInputStr);
+        //hide keyboard
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
 
         try {
             //get language parameters
@@ -124,7 +122,8 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
             System.out.println("Language to:" + strLangTo);
 
             //开始翻译
-            mTransHelper.translate(uersInputStr, strLangFrom, strLangTo);
+//            mTransHelper.translate(uersInputStr, strLangFrom, strLangTo);
+            mTransHelper.translate(uersInputStr);
 
         } catch (Exception e) {
             System.out.println(e.getMessage());

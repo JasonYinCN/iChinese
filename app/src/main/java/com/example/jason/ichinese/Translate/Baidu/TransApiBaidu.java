@@ -1,15 +1,17 @@
 package com.example.jason.ichinese.Translate.Baidu;
 
+import com.example.jason.ichinese.Translate.HttpGet;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class TransApi {
+public class TransApiBaidu {
     private static final String TRANS_API_HOST = "http://api.fanyi.baidu.com/api/trans/vip/translate";
 
     private String appid;
     private String securityKey;
 
-    public TransApi(String appid, String securityKey) {
+    public TransApiBaidu(String appid, String securityKey) {
         this.appid = appid;
         this.securityKey = securityKey;
     }

@@ -1,4 +1,6 @@
-package com.example.jason.ichinese.Translate.Baidu;
+package com.example.jason.ichinese.Translate;
+
+import android.util.JsonReader;
 
 import java.io.BufferedReader;
 import java.io.Closeable;
@@ -21,7 +23,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-class HttpGet {
+public class HttpGet {
     protected static final int SOCKET_TIMEOUT = 10000; // 10S
     protected static final String GET = "GET";
 
@@ -64,6 +66,98 @@ class HttpGet {
             conn.disconnect(); // 断开连接
 
             return text;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String get(String sendUrl) {
+        try {
+            // 设置SSLContext
+            SSLContext sslcontext = SSLContext.getInstance("TLS");
+            sslcontext.init(null, new TrustManager[] { myX509TrustManager }, null);
+
+            // System.out.println("URL:" + sendUrl);
+
+            URL uri = new URL(sendUrl); // 创建URL对象
+            HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
+            if (conn instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) conn).setSSLSocketFactory(sslcontext.getSocketFactory());
+            }
+
+            conn.setConnectTimeout(SOCKET_TIMEOUT); // 设置相应超时
+            conn.setRequestMethod(GET);
+            int statusCode = conn.getResponseCode();
+            if (statusCode != HttpURLConnection.HTTP_OK) {
+                System.out.println("Http错误码：" + statusCode);
+            }
+
+            // 读取服务器的数据
+            InputStream is = conn.getInputStream();
+            JsonReader jsonReader = new JsonReader(new InputStreamReader(is));
+            try {
+                /*开始解析json为object对象*/
+                jsonReader.beginObject();
+                while(jsonReader.hasNext()){
+                    String tag = jsonReader.nextName();
+                    if (tag.equals("word_name")) {
+                        String word_name = jsonReader.nextString();
+                        System.out.println("word_name : " + word_name);
+                    }else if (tag.equals("exchange")) {
+                        String exchange = jsonReader.nextString();
+                        System.out.println("exchange : " + exchange);
+                    }else if (tag.equals("symbols")) {
+                        jsonReader.beginArray();
+
+                    }else if (tag.equals("ph_en")) {
+                        String ph_en = jsonReader.nextString();
+                        System.out.println("ph_en : " + ph_en);
+                    }else if (tag.equals("ph_am")) {
+                        String ph_am = jsonReader.nextString();
+                        System.out.println("ph_am : " + ph_am);
+                    }
+//                    else if (tag.equals("ph_en_mp3")) {
+//                        Integer age = jsonReader.nextInt();
+//                        System.out.println("ph_en_mp3 : " + age);
+//                    }else if (tag.equals("ph_am_mp3")) {
+//                        Integer age = jsonReader.nextInt();
+//                        System.out.println("ph_am_mp3 : " + age);
+//                    }else if (tag.equals("ph_tts_mp3")) {
+//                        Integer age = jsonReader.nextInt();
+//                        System.out.println("ph_tts_mp3 : " + age);
+//                    }
+                    else if (tag.equals("parts")) {
+                        /*开始解析cars中数组*/
+                        jsonReader.beginArray();
+                        int i = 0;
+                        while(jsonReader.hasNext()){
+                            System.out.println("car" + (++i) + " : " + jsonReader.nextString());
+                        }
+                        jsonReader.endArray();
+                    }else{
+                        String str = jsonReader.nextString();
+                        System.out.println("str: " + str);
+                    }
+                }
+                jsonReader.endObject();
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            close(jsonReader); // 关闭数据流
+            close(is); // 关闭数据流
+            conn.disconnect(); // 断开连接
+
+            return "";
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -155,5 +249,4 @@ class HttpGet {
         public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
         }
     };
-
 }
