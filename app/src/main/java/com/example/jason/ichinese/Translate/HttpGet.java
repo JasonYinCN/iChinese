@@ -16,6 +16,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.List;
 import java.util.Map;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -27,6 +28,12 @@ public class HttpGet {
     protected static final int SOCKET_TIMEOUT = 10000; // 10S
     protected static final String GET = "GET";
 
+//    public class TransResData_JS{
+//        public String wordName;
+//        public List<String> sysbolsList;
+//        public Map<String, String>
+//    }
+
     public static String get(String host, Map<String, String> params) {
         try {
             // 设置SSLContext
@@ -34,8 +41,6 @@ public class HttpGet {
             sslcontext.init(null, new TrustManager[] { myX509TrustManager }, null);
 
             String sendUrl = getUrlWithQueryString(host, params);
-
-            // System.out.println("URL:" + sendUrl);
 
             URL uri = new URL(sendUrl); // 创建URL对象
             HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
@@ -102,33 +107,16 @@ public class HttpGet {
 
             // 读取服务器的数据
             InputStream is = conn.getInputStream();
-            JsonReader jsReader = new JsonReader(new InputStreamReader(is));
-            try {
-                /*开始解析json为object对象*/
-                jsReader.beginObject();
-                while(jsReader.hasNext()){
-                    String tagName = jsReader.nextName();
-                    switch (tagName) {
-                        case "word_name":
-                            System.out.println("name:" + jsReader.nextString());
-                            break;
-                        case "symbols":
-                            readSymbol(jsReader);
-                            break;
-                        default:
-                            //跳过当前值
-                            jsReader.skipValue();
-                            System.out.println("skip======>");
-                            break;
-                    }
-                }
-                jsReader.endObject();
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                builder.append(line);
             }
 
-            close(jsReader); // 关闭数据流
+            String text = builder.toString();
+
+
             close(is); // 关闭数据流
             conn.disconnect(); // 断开连接
 
@@ -146,84 +134,6 @@ public class HttpGet {
         return null;
     }
 
-    //由于读取symbol中的数据
-    private static void readSymbol(JsonReader jsReader) throws IOException{
-        jsReader.beginArray();
-        while (jsReader.hasNext()) {
-            jsReader.beginObject();
-            while (jsReader.hasNext()) {
-                String tagName = jsReader.nextName();
-                switch (tagName) {
-                    case "word_symbol":
-                        String word_symbol = jsReader.nextString();
-                        System.out.println("word_symbol:" + word_symbol);
-                        break;
-                    case "symbol_mp3":
-                        String symbol_mp3 = jsReader.nextString();
-                        System.out.println("symbol_mp3:" + symbol_mp3);
-                        break;
-                    case "parts":
-                        readParts(jsReader);
-                        break;
-                    default:
-                        //跳过当前值
-                        jsReader.skipValue();
-                        System.out.println("skip======>");
-                        break;
-                }
-            }
-            jsReader.endObject();
-        }
-        jsReader.endArray();
-    }
-
-    //由于读取symbol中的数据
-    private static void readParts(JsonReader jsReader) throws IOException{
-        jsReader.beginArray();
-        while (jsReader.hasNext()) {
-            jsReader.beginObject();
-            while (jsReader.hasNext()) {
-                String tagName = jsReader.nextName();
-                switch (tagName) {
-                    case "part_name":
-                        String part_name = jsReader.nextString();
-                        System.out.println("part_name:" + part_name);
-                        break;
-                    case "means":
-                        readMeans(jsReader);
-                        break;
-                    default:
-                        //跳过当前值
-                        jsReader.skipValue();
-                        System.out.println("skip======>");
-                        break;
-                }
-            }
-            jsReader.endObject();
-        }
-        jsReader.endArray();
-    }
-
-    //由于读取symbol中的数据
-    private static void readMeans(JsonReader jsReader) throws IOException{
-        jsReader.beginArray();
-        while (jsReader.hasNext()) {
-            jsReader.beginObject();
-            while (jsReader.hasNext()) {
-                String tagName = jsReader.nextName();
-                if (tagName.equals("word_mean")) {
-                    String word_mean = jsReader.nextString();
-                    System.out.println("word_mean:"+ word_mean);
-                }else {
-                    //跳过当前值
-                    jsReader.skipValue();
-                    System.out.println("skip======>");
-                }
-            }
-            jsReader.endObject();
-        }
-        jsReader.endArray();
-    }
 
     public static String getUrlWithQueryString(String url, Map<String, String> params) {
         if (params == null) {

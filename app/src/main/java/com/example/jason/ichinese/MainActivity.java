@@ -23,14 +23,15 @@ import com.example.jason.ichinese.Translate.TranslateHelper.TranslateCallback;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements HorizontalScrollBarStrip.TagChangeListener{
+import com.example.jason.ichinese.CustomCtrl.EditTextWithClearBtn;
+
+public class MainActivity extends AppCompatActivity implements HorizontalScrollBarStrip.TagChangeListener
+    , EditTextWithClearBtn.OnFocusChangeListener{
     private TranslateHelper mTransHelper;
 
     //View
-    private EditText mUserInputText;
     private TextView mTextViewTransRes;
-    private Spinner mSpinerLangFrom;
-    private Spinner mSpinerLangTo;
+    private EditTextWithClearBtn searchView;
 
     //scroll bar
     private HorizontalScrollBarStrip id_horizontal_view;
@@ -67,10 +68,22 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
         id_horizontal_view.setTags(mScrollBarTitiles);
         id_horizontal_view.setOnTagChangeListener(this);
 
-        mUserInputText = findViewById(R.id.userInput);
         mTextViewTransRes = findViewById(R.id.textViewTransRes);
-        mSpinerLangFrom = findViewById(R.id.language_from);
-        mSpinerLangTo = findViewById(R.id.language_to);
+
+        searchView = findViewById(R.id.userInput);
+        searchView.setOnFocusChangeListener(this);
+    }
+
+    @Override
+    public void onFocusChange(View v, boolean hasFocus) {
+        if (hasFocus) {
+            // 此处为得到焦点时的处理内容
+            setContentView(R.layout.translatelayout);
+            System.out.println("text edit get focus");
+        } else {
+            // 此处为失去焦点时的处理内容
+            System.out.println("text edit lost focus");
+        }
     }
 
     public void changeLine(int location_x, boolean isClick) {
@@ -98,35 +111,18 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
     }
 
     public void buttonTranslateClicked(View v){
-        String uersInputStr = mUserInputText.getText().toString();
-        System.out.println("User input:" + uersInputStr);
-        //hide keyboard
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-
-        try {
-            //get language parameters
-            String strLangFrom, strLangTo;
-            //src language
-            int nLangFrom = (int)mSpinerLangFrom.getSelectedItemId();
-            if(0 == nLangFrom){
-                strLangFrom = "auto";
-            }else{
-                strLangFrom = mTitiles.get(nLangFrom - 1);
-            }
-
-            //target language
-            strLangTo = mTitiles.get((int)mSpinerLangTo.getSelectedItemId());
-
-            System.out.println("Language from:" + strLangFrom);
-            System.out.println("Language to:" + strLangTo);
-
-            //开始翻译
-//            mTransHelper.translate(uersInputStr, strLangFrom, strLangTo);
-            mTransHelper.translate(uersInputStr);
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        setContentView(R.layout.translatelayout);
+//        setContentView(R.layout.activity_main);
+//        String uersInputStr = mUserInputText.getText().toString();
+//        System.out.println("User input:" + uersInputStr);
+//        //hide keyboard
+//        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+//        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
     }
+
+    public void btnBackClicked(View v){
+        setContentView(R.layout.activity_main);
+    }
+
+
 }
