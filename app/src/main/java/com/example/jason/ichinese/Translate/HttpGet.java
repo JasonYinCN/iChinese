@@ -102,58 +102,33 @@ public class HttpGet {
 
             // 读取服务器的数据
             InputStream is = conn.getInputStream();
-            JsonReader jsonReader = new JsonReader(new InputStreamReader(is));
+            JsonReader jsReader = new JsonReader(new InputStreamReader(is));
             try {
                 /*开始解析json为object对象*/
-                jsonReader.beginObject();
-                while(jsonReader.hasNext()){
-                    String tag = jsonReader.nextName();
-                    if (tag.equals("word_name")) {
-                        String word_name = jsonReader.nextString();
-                        System.out.println("word_name : " + word_name);
-                    }else if (tag.equals("exchange")) {
-                        String exchange = jsonReader.nextString();
-                        System.out.println("exchange : " + exchange);
-                    }else if (tag.equals("symbols")) {
-                        jsonReader.beginArray();
-
-                    }else if (tag.equals("ph_en")) {
-                        String ph_en = jsonReader.nextString();
-                        System.out.println("ph_en : " + ph_en);
-                    }else if (tag.equals("ph_am")) {
-                        String ph_am = jsonReader.nextString();
-                        System.out.println("ph_am : " + ph_am);
-                    }
-//                    else if (tag.equals("ph_en_mp3")) {
-//                        Integer age = jsonReader.nextInt();
-//                        System.out.println("ph_en_mp3 : " + age);
-//                    }else if (tag.equals("ph_am_mp3")) {
-//                        Integer age = jsonReader.nextInt();
-//                        System.out.println("ph_am_mp3 : " + age);
-//                    }else if (tag.equals("ph_tts_mp3")) {
-//                        Integer age = jsonReader.nextInt();
-//                        System.out.println("ph_tts_mp3 : " + age);
-//                    }
-                    else if (tag.equals("parts")) {
-                        /*开始解析cars中数组*/
-                        jsonReader.beginArray();
-                        int i = 0;
-                        while(jsonReader.hasNext()){
-                            System.out.println("car" + (++i) + " : " + jsonReader.nextString());
-                        }
-                        jsonReader.endArray();
-                    }else{
-                        String str = jsonReader.nextString();
-                        System.out.println("str: " + str);
+                jsReader.beginObject();
+                while(jsReader.hasNext()){
+                    String tagName = jsReader.nextName();
+                    switch (tagName) {
+                        case "word_name":
+                            System.out.println("name:" + jsReader.nextString());
+                            break;
+                        case "symbols":
+                            readSymbol(jsReader);
+                            break;
+                        default:
+                            //跳过当前值
+                            jsReader.skipValue();
+                            System.out.println("skip======>");
+                            break;
                     }
                 }
-                jsonReader.endObject();
+                jsReader.endObject();
             } catch (IOException e1) {
                 // TODO Auto-generated catch block
                 e1.printStackTrace();
             }
 
-            close(jsonReader); // 关闭数据流
+            close(jsReader); // 关闭数据流
             close(is); // 关闭数据流
             conn.disconnect(); // 断开连接
 
@@ -169,6 +144,85 @@ public class HttpGet {
         }
 
         return null;
+    }
+
+    //由于读取symbol中的数据
+    private static void readSymbol(JsonReader jsReader) throws IOException{
+        jsReader.beginArray();
+        while (jsReader.hasNext()) {
+            jsReader.beginObject();
+            while (jsReader.hasNext()) {
+                String tagName = jsReader.nextName();
+                switch (tagName) {
+                    case "word_symbol":
+                        String word_symbol = jsReader.nextString();
+                        System.out.println("word_symbol:" + word_symbol);
+                        break;
+                    case "symbol_mp3":
+                        String symbol_mp3 = jsReader.nextString();
+                        System.out.println("symbol_mp3:" + symbol_mp3);
+                        break;
+                    case "parts":
+                        readParts(jsReader);
+                        break;
+                    default:
+                        //跳过当前值
+                        jsReader.skipValue();
+                        System.out.println("skip======>");
+                        break;
+                }
+            }
+            jsReader.endObject();
+        }
+        jsReader.endArray();
+    }
+
+    //由于读取symbol中的数据
+    private static void readParts(JsonReader jsReader) throws IOException{
+        jsReader.beginArray();
+        while (jsReader.hasNext()) {
+            jsReader.beginObject();
+            while (jsReader.hasNext()) {
+                String tagName = jsReader.nextName();
+                switch (tagName) {
+                    case "part_name":
+                        String part_name = jsReader.nextString();
+                        System.out.println("part_name:" + part_name);
+                        break;
+                    case "means":
+                        readMeans(jsReader);
+                        break;
+                    default:
+                        //跳过当前值
+                        jsReader.skipValue();
+                        System.out.println("skip======>");
+                        break;
+                }
+            }
+            jsReader.endObject();
+        }
+        jsReader.endArray();
+    }
+
+    //由于读取symbol中的数据
+    private static void readMeans(JsonReader jsReader) throws IOException{
+        jsReader.beginArray();
+        while (jsReader.hasNext()) {
+            jsReader.beginObject();
+            while (jsReader.hasNext()) {
+                String tagName = jsReader.nextName();
+                if (tagName.equals("word_mean")) {
+                    String word_mean = jsReader.nextString();
+                    System.out.println("word_mean:"+ word_mean);
+                }else {
+                    //跳过当前值
+                    jsReader.skipValue();
+                    System.out.println("skip======>");
+                }
+            }
+            jsReader.endObject();
+        }
+        jsReader.endArray();
     }
 
     public static String getUrlWithQueryString(String url, Map<String, String> params) {

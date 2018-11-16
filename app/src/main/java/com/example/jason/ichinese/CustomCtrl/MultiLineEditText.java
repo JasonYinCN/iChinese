@@ -6,7 +6,6 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.support.v7.widget.AppCompatEditText;
 import android.support.v7.widget.AppCompatMultiAutoCompleteTextView;
 import com.example.jason.ichinese.R;
 
