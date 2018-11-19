@@ -61,7 +61,6 @@ public class EditTextWithClearBtn extends AppCompatEditText implements View.OnFo
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         if (mClearDrawable != null && event.getAction() == MotionEvent.ACTION_UP) {
             int x = (int) event.getX();
             //判断触摸点是否在水平范围内
@@ -80,6 +79,8 @@ public class EditTextWithClearBtn extends AppCompatEditText implements View.OnFo
             if (isInnerHeight && isInnerWidth) {
                 this.setText("");
             }
+
+            mClickListener.onTextEditClicked();
         }
         return super.onTouchEvent(event);
     }
@@ -146,5 +147,20 @@ public class EditTextWithClearBtn extends AppCompatEditText implements View.OnFo
         translateAnimation.setInterpolator(new CycleInterpolator(counts));
         translateAnimation.setDuration(1000);
         return translateAnimation;
+    }
+
+    /**
+     * 监听click事件
+     *
+     */
+
+    TextEditClickedListener mClickListener;
+
+    public interface TextEditClickedListener{
+        void onTextEditClicked();
+    }
+
+    public void setTextEditClickedListener(TextEditClickedListener listener ){
+        mClickListener = listener;
     }
 }

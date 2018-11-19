@@ -1,12 +1,10 @@
 package com.example.jason.ichinese;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.jason.ichinese.CustomCtrl.HorizontalScrollBarStrip;
@@ -25,8 +23,8 @@ import java.util.List;
 
 import com.example.jason.ichinese.CustomCtrl.EditTextWithClearBtn;
 
-public class MainActivity extends AppCompatActivity implements HorizontalScrollBarStrip.TagChangeListener
-    , EditTextWithClearBtn.OnFocusChangeListener{
+public class MainActivity extends AppCompatActivity implements HorizontalScrollBarStrip.TagChangeListener ,
+    EditTextWithClearBtn.TextEditClickedListener{
     private TranslateHelper mTransHelper;
 
     //View
@@ -49,8 +47,6 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
         }
     };
 
-    private List<String> mTitiles = Arrays.asList("en", "zh", "jp");
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,19 +67,7 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
         mTextViewTransRes = findViewById(R.id.textViewTransRes);
 
         searchView = findViewById(R.id.userInput);
-        searchView.setOnFocusChangeListener(this);
-    }
-
-    @Override
-    public void onFocusChange(View v, boolean hasFocus) {
-        if (hasFocus) {
-            // 此处为得到焦点时的处理内容
-            setContentView(R.layout.translatelayout);
-            System.out.println("text edit get focus");
-        } else {
-            // 此处为失去焦点时的处理内容
-            System.out.println("text edit lost focus");
-        }
+        searchView.setTextEditClickedListener(this);
     }
 
     public void changeLine(int location_x, boolean isClick) {
@@ -99,6 +83,15 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
         mLineLocation_X = location_x;
     }
 
+    public void onTextEditClicked(){
+        System.out.println("text edit has been clicked");
+
+        Intent intent = new Intent();
+        intent.setClass(MainActivity.this, TranslateActive.class);
+        startActivityForResult(intent, 1);
+//        finish();
+    }
+
     private void initLineParams() {
         lineLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         lineLp.weight = 0f;
@@ -109,20 +102,4 @@ public class MainActivity extends AppCompatActivity implements HorizontalScrollB
         lineLp.width = (int) (width / (id_horizontal_view.mDefaultShowTagCount + 0.7));
         lineLp.height = (int) (getResources().getDisplayMetrics().density * 1 + 0.5f);
     }
-
-    public void buttonTranslateClicked(View v){
-        setContentView(R.layout.translatelayout);
-//        setContentView(R.layout.activity_main);
-//        String uersInputStr = mUserInputText.getText().toString();
-//        System.out.println("User input:" + uersInputStr);
-//        //hide keyboard
-//        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-//        imm.hideSoftInputFromWindow(getWindow().getDecorView().getWindowToken(), 0);
-    }
-
-    public void btnBackClicked(View v){
-        setContentView(R.layout.activity_main);
-    }
-
-
 }

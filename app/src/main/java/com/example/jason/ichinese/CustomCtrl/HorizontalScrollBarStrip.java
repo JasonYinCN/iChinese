@@ -315,8 +315,6 @@ import android.widget.Toast;
         this.scrollBy(motionLength / 10, 0);
     }
 
-    ;
-
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
