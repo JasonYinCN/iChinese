@@ -1,8 +1,6 @@
 package com.example.jason.ichinese;
 
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +8,6 @@ import android.os.Bundle;
 import android.view.MenuItem;
 
 import com.example.jason.ichinese.CustomCtrl.BottomNavigationViewHelper;
-
 
 public class MainActivity extends AppCompatActivity {
 

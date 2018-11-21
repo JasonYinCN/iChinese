@@ -1,17 +1,21 @@
 package com.example.jason.ichinese;
 
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jason.ichinese.CustomCtrl.EditTextWithClearBtn;
 import com.example.jason.ichinese.Translate.Jinshan.TransApiJinshan;
 import com.example.jason.ichinese.Translate.TranslateHelper;
+
+import static android.content.Context.INPUT_METHOD_SERVICE;
 
 public class TranslateFragment extends Fragment implements EditTextWithClearBtn.TextEditClickedListener{
 
@@ -20,7 +24,13 @@ public class TranslateFragment extends Fragment implements EditTextWithClearBtn.
     private EditTextWithClearBtn mSearchView;
     private TranslateHelper mTransHelper;
     private ImageView mDailyImageView;
+    private TextView mTextViewContent;
+    private TextView mTextViewNote;
+
+    private Handler mHandler = new Handler();
     private TransApiJinshan.DailySentense mDailySentense;
+
+    InputMethodManager manager;//输入法管理器
 
     //translate callback
     private TranslateHelper.TranslateCallback mTransCallback = new TranslateHelper.TranslateCallback() {
@@ -43,6 +53,14 @@ public class TranslateFragment extends Fragment implements EditTextWithClearBtn.
                     mDailyImageView.setImageBitmap(mDailySentense.getBitmap());
                 }
             });
+
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    mTextViewContent.setText(mDailySentense.getContent());
+                    mTextViewNote.setText(mDailySentense.getNote());                }
+            });
+
         }
     };
 
@@ -57,6 +75,8 @@ public class TranslateFragment extends Fragment implements EditTextWithClearBtn.
         mSearchView = view.findViewById(R.id.userInput);
         mSearchView.setTextEditClickedListener(this);
         mDailyImageView = view.findViewById(R.id.dailyImageView);
+        mTextViewContent = view.findViewById(R.id.content);
+        mTextViewNote = view.findViewById(R.id.note);
 
         //初始化translate
         mTransHelper = new TranslateHelper();
@@ -64,7 +84,32 @@ public class TranslateFragment extends Fragment implements EditTextWithClearBtn.
         mTransHelper.setDailySentenseCallback(mDayliSentenseCallback);
         mTransHelper.getDailySentense("2018-05-03");
 
+        MainActivity activity = (MainActivity) this.getActivity();
+        manager = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
+        search();
+
         return view;
+    }
+
+    private void search() {
+        mSearchView.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
+                    //hide keyboard
+                    if (manager.isActive()) {
+                        manager.hideSoftInputFromWindow(mSearchView.getApplicationWindowToken(), 0);
+                    }
+                    //translate
+                    mTransHelper.translate(mSearchView.getText().toString());
+
+
+                    System.out.println("XXXXXXXXXXXXXX");
+                }
+                //记得返回false
+                return false;
+            }
+        });
     }
 
     public void onTextEditClicked(){
