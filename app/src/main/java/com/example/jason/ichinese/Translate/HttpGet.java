@@ -1,5 +1,7 @@
 package com.example.jason.ichinese.Translate;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.JsonReader;
 
 import java.io.BufferedReader;
@@ -107,20 +109,64 @@ public class HttpGet {
 
             // 读取服务器的数据
             InputStream is = conn.getInputStream();
+
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
             StringBuilder builder = new StringBuilder();
-            String line = null;
+            String line;
             while ((line = br.readLine()) != null) {
                 builder.append(line);
             }
 
             String text = builder.toString();
 
+            close(is); // 关闭数据流
+            conn.disconnect(); // 断开连接
+
+            return text;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (KeyManagementException e) {
+            e.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static Bitmap getBitmap(String sendUrl) {
+        try {
+            // 设置SSLContext
+            SSLContext sslcontext = SSLContext.getInstance("TLS");
+            sslcontext.init(null, new TrustManager[] { myX509TrustManager }, null);
+
+            // System.out.println("URL:" + sendUrl);
+
+            URL uri = new URL(sendUrl); // 创建URL对象
+            HttpURLConnection conn = (HttpURLConnection) uri.openConnection();
+            if (conn instanceof HttpsURLConnection) {
+                ((HttpsURLConnection) conn).setSSLSocketFactory(sslcontext.getSocketFactory());
+            }
+
+            conn.setConnectTimeout(SOCKET_TIMEOUT); // 设置相应超时
+            conn.setRequestMethod(GET);
+            int statusCode = conn.getResponseCode();
+            if (statusCode != HttpURLConnection.HTTP_OK) {
+                System.out.println("Http错误码：" + statusCode);
+            }
+
+            // 读取服务器的数据
+            InputStream is = conn.getInputStream();
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            Bitmap bitmap = BitmapFactory.decodeStream(is);
 
             close(is); // 关闭数据流
             conn.disconnect(); // 断开连接
 
-            return "";
+            return bitmap;
         } catch (MalformedURLException e) {
             e.printStackTrace();
         } catch (IOException e) {

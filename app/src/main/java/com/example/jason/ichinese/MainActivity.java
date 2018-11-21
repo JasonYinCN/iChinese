@@ -1,105 +1,98 @@
 package com.example.jason.ichinese;
 
-import android.content.Context;
-import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.TextView;
+import android.view.MenuItem;
 
-import com.example.jason.ichinese.CustomCtrl.HorizontalScrollBarStrip;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.TranslateAnimation;
-import android.widget.LinearLayout;
-import android.util.DisplayMetrics;
-import android.app.Service;
-import android.view.WindowManager;
+import com.example.jason.ichinese.CustomCtrl.BottomNavigationViewHelper;
 
-import com.example.jason.ichinese.Translate.TranslateHelper;
-import com.example.jason.ichinese.Translate.TranslateHelper.TranslateCallback;
 
-import java.util.Arrays;
-import java.util.List;
+public class MainActivity extends AppCompatActivity {
 
-import com.example.jason.ichinese.CustomCtrl.EditTextWithClearBtn;
-
-public class MainActivity extends AppCompatActivity implements HorizontalScrollBarStrip.TagChangeListener ,
-    EditTextWithClearBtn.TextEditClickedListener{
-    private TranslateHelper mTransHelper;
-
-    //View
-    private TextView mTextViewTransRes;
-    private EditTextWithClearBtn searchView;
-
-    //scroll bar
-    private HorizontalScrollBarStrip id_horizontal_view;
-    private LinearLayout.LayoutParams lineLp;
-
-    private List<String> mScrollBarTitiles = Arrays.asList("Trans", "Study", "Find", "Me");
-    private int mLineLocation_X = 0;
-
-    //translate callback
-    private TranslateCallback mTransCallback = new TranslateCallback() {
-        @Override
-        public void call(String translateRes) {
-            System.out.println(translateRes);
-            mTextViewTransRes.setText(translateRes);
-        }
-    };
+    private ViewPager viewPager;
+    private MenuItem menuItem;
+    private BottomNavigationView bottomNavigationView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        //初始化view
+
         initView();
-        //初始化translate
-        mTransHelper = new TranslateHelper();
-        mTransHelper.setTranslateCallback(mTransCallback);
     }
 
     private void initView() {
-        id_horizontal_view = findViewById(R.id.id_horizontal_view);
-        initLineParams();
-        id_horizontal_view.setTags(mScrollBarTitiles);
-        id_horizontal_view.setOnTagChangeListener(this);
+        viewPager = findViewById(R.id.viewpager);
+        viewPager.setOffscreenPageLimit(0);
+        bottomNavigationView = findViewById(R.id.bottom_navigation);
+        //默认 >3 的选中效果会影响ViewPager的滑动切换时的效果，故利用反射去掉
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(
+                new BottomNavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                        switch (item.getItemId()) {
+                            case R.id.item_news:
+                                viewPager.setCurrentItem(0);
+                                break;
+                            case R.id.item_lib:
+                                viewPager.setCurrentItem(1);
+                                break;
+                            case R.id.item_find:
+                                viewPager.setCurrentItem(2);
+                                break;
+                            case R.id.item_more:
+                                viewPager.setCurrentItem(3);
+                                break;
+                        }
+                        return false;
+                    }
+                });
 
-        mTextViewTransRes = findViewById(R.id.textViewTransRes);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-        searchView = findViewById(R.id.userInput);
-        searchView.setTextEditClickedListener(this);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                if (menuItem != null) {
+                    menuItem.setChecked(false);
+                } else {
+                    bottomNavigationView.getMenu().getItem(0).setChecked(false);
+                }
+                menuItem = bottomNavigationView.getMenu().getItem(position);
+                menuItem.setChecked(true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+            }
+        });
+
+        //禁止ViewPager滑动
+//        viewPager.setOnTouchListener(new View.OnTouchListener() {
+//            @Override
+//            public boolean onTouch(View v, MotionEvent event) {
+//                return true;
+//            }
+//        });
+
+        setupViewPager(viewPager);
     }
 
-    public void changeLine(int location_x, boolean isClick) {
-        TranslateAnimation animation = new TranslateAnimation(mLineLocation_X, location_x, 0f, 0f);
-        animation.setInterpolator(new LinearInterpolator());
-        int duration = 0;
-        if (isClick) {
-            duration = 200 * (Math.abs(location_x - mLineLocation_X) / 100);
-            duration = duration > 400 ? 400 : duration;
-        }
-        animation.setDuration(duration);
-        animation.setFillAfter(true);
-        mLineLocation_X = location_x;
-    }
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-    public void onTextEditClicked(){
-        System.out.println("text edit has been clicked");
+        adapter.addFragment(new TranslateFragment());
+        adapter.addFragment(new CommonSentencesFragment());
 
-        Intent intent = new Intent();
-        intent.setClass(MainActivity.this, TranslateActive.class);
-        startActivityForResult(intent, 1);
-//        finish();
-    }
-
-    private void initLineParams() {
-        lineLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        lineLp.weight = 0f;
-        WindowManager wm = (WindowManager) getSystemService(Service.WINDOW_SERVICE);
-        DisplayMetrics dm = new DisplayMetrics();
-        wm.getDefaultDisplay().getMetrics(dm);
-        int width = dm.widthPixels;
-        lineLp.width = (int) (width / (id_horizontal_view.mDefaultShowTagCount + 0.7));
-        lineLp.height = (int) (getResources().getDisplayMetrics().density * 1 + 0.5f);
+        viewPager.setAdapter(adapter);
     }
 }

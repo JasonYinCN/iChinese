@@ -1,4 +1,7 @@
 package com.example.jason.ichinese.Translate;
+import android.graphics.Bitmap;
+import android.media.Image;
+
 import com.example.jason.ichinese.Translate.Baidu.TransApiBaidu;
 import com.example.jason.ichinese.Translate.Jinshan.TransApiJinshan;
 
@@ -22,14 +25,30 @@ public class TranslateHelper {
         mTransApiJinshan = new TransApiJinshan(SECURITY_KEY_JINSHAN);
     }
 
-    public static interface TranslateCallback{
-        public void call(String translateRes);
+    /**
+     * translate callback
+     * */
+    public interface TranslateCallback{
+        void call(String translateRes);
     }
 
     private TranslateCallback mCallback;
 
     public void setTranslateCallback(TranslateCallback callback){
         mCallback = callback;
+    }
+
+    /**
+     * daily sentense callback
+     * */
+    public interface DailySentenseCallback{
+        void call(TransApiJinshan.DailySentense dailySentense);
+    }
+
+    private DailySentenseCallback mDailySentenseCallback;
+
+    public void setDailySentenseCallback(DailySentenseCallback callback){
+        mDailySentenseCallback = callback;
     }
 
     //在线程中翻译
@@ -60,7 +79,26 @@ public class TranslateHelper {
         new Thread(){
             public void run(){
                 try {
-                    mTransApiJinshan.getTransResult(mInputText);
+                    String res = mTransApiJinshan.getTransResult(mInputText);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }.start();
+    }
+
+    public void getDailySentense(String input){
+        mInputText = input;
+
+        new Thread(){
+            public void run(){
+                try {
+                    String res = mTransApiJinshan.getDailySentense(mInputText);
+                    System.out.println(res);
+                    TransApiJinshan.DailySentense sentense = mTransApiJinshan.readDailySentenseJson(res);
+                    Bitmap bitmap = HttpGet.getBitmap(sentense.getPicture2Url());
+                    sentense.setBitmap(bitmap);
+                    mDailySentenseCallback.call(sentense);
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
