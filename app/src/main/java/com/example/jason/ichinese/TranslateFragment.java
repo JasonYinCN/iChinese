@@ -1,64 +1,43 @@
 package com.example.jason.ichinese;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
-import android.widget.TextView;
 
+import com.example.jason.ichinese.Common.CommonFunction;
 import com.example.jason.ichinese.CustomCtrl.EditTextWithClearBtn;
 import com.example.jason.ichinese.Translate.Jinshan.TransApiJinshan;
 import com.example.jason.ichinese.Translate.TranslateHelper;
 
-import static android.content.Context.INPUT_METHOD_SERVICE;
+public class TranslateFragment extends Fragment{
 
-public class TranslateFragment extends Fragment implements EditTextWithClearBtn.TextEditClickedListener{
-
-    //View
-    private TextView mTextViewTransRes;
-    private EditTextWithClearBtn mSearchView;
     private TranslateHelper mTransHelper;
+    //View
+    private EditTextWithClearBtn mSearchView;
     private ImageView mDailyImageView;
-    private TextView mTextViewContent;
-    private TextView mTextViewNote;
 
     private Handler mHandler = new Handler();
     private TransApiJinshan.DailySentense mDailySentense;
-
-    InputMethodManager manager;//输入法管理器
-
-    //translate callback
-    private TranslateHelper.TranslateCallback mTransCallback = new TranslateHelper.TranslateCallback() {
-        @Override
-        public void call(String translateRes) {
-            System.out.println(translateRes);
-            mTextViewTransRes.setText(translateRes);
-        }
-    };
 
     //daily senetense callback
     private TranslateHelper.DailySentenseCallback mDayliSentenseCallback = new TranslateHelper.DailySentenseCallback() {
         @Override
         public void call(TransApiJinshan.DailySentense dailySentense) {
-            System.out.println("mDayliSentenseCallback");
             mDailySentense = dailySentense;
-            mDailyImageView.post(new Runnable() {
-                @Override
-                public void run() {
-                    mDailyImageView.setImageBitmap(mDailySentense.getBitmap());
-                }
-            });
-
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    mTextViewContent.setText(mDailySentense.getContent());
-                    mTextViewNote.setText(mDailySentense.getNote());                }
+                    Bitmap bitmap = mDailySentense.getBitmap();
+                    int cropHeight = bitmap.getHeight() - 400;
+                    Bitmap cropBitmap =  Bitmap.createBitmap(bitmap, 0, 110, bitmap.getWidth(), cropHeight, null, false);
+                    mDailyImageView.setImageBitmap(cropBitmap);
+                }
             });
 
         }
@@ -71,49 +50,28 @@ public class TranslateFragment extends Fragment implements EditTextWithClearBtn.
         view = inflater.inflate(R.layout.fragment_translate, null);
 
         //init view
-        mTextViewTransRes = view.findViewById(R.id.textViewTransRes);
         mSearchView = view.findViewById(R.id.userInput);
-        mSearchView.setTextEditClickedListener(this);
         mDailyImageView = view.findViewById(R.id.dailyImageView);
-        mTextViewContent = view.findViewById(R.id.content);
-        mTextViewNote = view.findViewById(R.id.note);
 
-        //初始化translate
+        //daily sentense
         mTransHelper = new TranslateHelper();
-        mTransHelper.setTranslateCallback(mTransCallback);
         mTransHelper.setDailySentenseCallback(mDayliSentenseCallback);
-        mTransHelper.getDailySentense("2018-05-03");
+        mTransHelper.getDailySentense(CommonFunction.getCurrentDate());
 
-        MainActivity activity = (MainActivity) this.getActivity();
-        manager = (InputMethodManager) activity.getSystemService(INPUT_METHOD_SERVICE);
-        search();
+        //edit text clicked callback
+        userInputEditClicked();
 
         return view;
     }
 
-    private void search() {
-        mSearchView.setOnKeyListener(new View.OnKeyListener() {
+    private void userInputEditClicked() {
+        mSearchView.setTextEditClickedListener(new EditTextWithClearBtn.TextEditClickedListener() {
             @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_DOWN) {
-                    //hide keyboard
-                    if (manager.isActive()) {
-                        manager.hideSoftInputFromWindow(mSearchView.getApplicationWindowToken(), 0);
-                    }
-                    //translate
-                    mTransHelper.translate(mSearchView.getText().toString());
-
-
-                    System.out.println("XXXXXXXXXXXXXX");
-                }
-                //记得返回false
-                return false;
+            public void onTextEditClicked() {
+                Intent intent = new Intent(getActivity(), TranslateActivity.class);
+                startActivity(intent);
             }
         });
-    }
-
-    public void onTextEditClicked(){
-        System.out.println("text edit has been clicked");
     }
 }
 

@@ -79,7 +79,7 @@ public class TranslateHelper {
         new Thread(){
             public void run(){
                 try {
-                    String res = mTransApiJinshan.getTransResult(mInputText);
+                    mCallback.call(mTransApiJinshan.getTransResult(mInputText));
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -96,7 +96,7 @@ public class TranslateHelper {
                     String res = mTransApiJinshan.getDailySentense(mInputText);
                     System.out.println(res);
                     TransApiJinshan.DailySentense sentense = mTransApiJinshan.readDailySentenseJson(res);
-                    Bitmap bitmap = HttpGet.getBitmap(sentense.getPicture2Url());
+                    Bitmap bitmap = HttpGet.getBitmap(sentense.getFenxiangImgUrl());
                     sentense.setBitmap(bitmap);
                     mDailySentenseCallback.call(sentense);
                 } catch (Exception e) {
@@ -104,5 +104,10 @@ public class TranslateHelper {
                 }
             }
         }.start();
+    }
+
+
+    public TransApiJinshan.WordInfo analyzeJinshanTransResult(String res){
+        return mTransApiJinshan.analyzeJinshanTransJson(res);
     }
 }

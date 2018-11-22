@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">i单词</string>
+    <string name="app_name">iChinese</string>
     <string name="translate">Trans</string>
     <string name="trans_edit_notify">Input the words to be translated</string>
+    <string name="cancel">cancel</string>
 </resources>

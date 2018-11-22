@@ -44,6 +44,7 @@ public class EditTextWithClearBtn extends AppCompatEditText implements View.OnFo
         super(context, attrs, defStyle);
         init();
     }
+
     private void init() {
         //获取EditText的DrawableRight,假如没有设置我们就使用默认的图片
         mClearDrawable = getCompoundDrawables()[2];
