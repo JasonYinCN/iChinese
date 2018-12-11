@@ -1,5 +1,10 @@
 package com.example.jason.ichinese.Common;
 
+import android.graphics.Bitmap;
+
+import com.example.jason.ichinese.Translate.HttpGet;
+import com.example.jason.ichinese.Translate.Jinshan.TransApiJinshan;
+
 import java.util.Calendar;
 import java.util.TimeZone;
 
@@ -26,5 +31,33 @@ public class CommonFunction {
         String date = year + "-" + month + "-" + day;
 
         return date;
+    }
+
+    static String mImageUrl;
+    public static void getWebImage(String imageUrl){
+        mImageUrl = imageUrl;
+        new Thread(){
+            public void run(){
+                try {
+                    Bitmap bitmap = HttpGet.getBitmap(mImageUrl);
+                    mWebImageCallback.call(bitmap);
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+        }.start();
+    }
+
+    /**
+     * web image callback
+     * */
+    public interface WebImageCallback{
+        void call(Bitmap bitmap);
+    }
+
+    private static WebImageCallback mWebImageCallback;
+
+    public static void setWebImageCallbackCallback(WebImageCallback callback){
+        mWebImageCallback = callback;
     }
 }

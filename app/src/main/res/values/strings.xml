@@ -3,4 +3,7 @@
     <string name="translate">Trans</string>
     <string name="trans_edit_notify">Input the words to be translated</string>
     <string name="cancel">cancel</string>
+    <string name="start_text">iChinese - Professional study chinese tool!</string>
+    <string name="bookshelves">书架</string>
+    <string name="skip">跳过</string>
 </resources>

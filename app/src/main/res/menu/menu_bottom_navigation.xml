@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/item_news"
+        android:id="@+id/item_bookshelves"
         android:icon="@mipmap/ic_news_gray"
-        android:title="新闻" />
+        android:title="书架" />
     <item
-        android:id="@+id/item_lib"
+        android:id="@+id/item_bookLib"
         android:icon="@mipmap/ic_library_gray"
-        android:title="图书" />
+        android:title="书城" />
 
     <item
         android:id="@+id/item_find"
@@ -15,8 +15,8 @@
         android:title="发现" />
 
     <item
-        android:id="@+id/item_more"
+        android:id="@+id/item_me"
         android:icon="@mipmap/ic_more_gray"
-        android:title="更多" />
+        android:title="我" />
 
 </menu>

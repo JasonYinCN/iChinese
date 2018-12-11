@@ -34,16 +34,16 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                         switch (item.getItemId()) {
-                            case R.id.item_news:
+                            case R.id.item_bookshelves:
                                 viewPager.setCurrentItem(0);
                                 break;
-                            case R.id.item_lib:
+                            case R.id.item_bookLib:
                                 viewPager.setCurrentItem(1);
                                 break;
                             case R.id.item_find:
                                 viewPager.setCurrentItem(2);
                                 break;
-                            case R.id.item_more:
+                            case R.id.item_me:
                                 viewPager.setCurrentItem(3);
                                 break;
                         }
@@ -69,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-            }
+            public void onPageScrollStateChanged(int state) { }
         });
 
         //禁止ViewPager滑动
@@ -87,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
+        adapter.addFragment(new BookShelvesFragment());
         adapter.addFragment(new TranslateFragment());
-        adapter.addFragment(new CommonSentencesFragment());
 
         viewPager.setAdapter(adapter);
     }
